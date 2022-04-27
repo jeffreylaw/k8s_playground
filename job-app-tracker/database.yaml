@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: job-apps-tracker-db-deployment
+  labels:
+    app: job-apps-tracker
+spec:
+  template:
+    metadata:
+      name: job-apps-tracker-db-pod
+      labels:
+        name: job-apps-tracker-db-pod
+        app: job-apps-tracker
+        tier: db
+    spec:
+      containers:
+        - name: job-apps-tracker-db
+          image: postgres
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: job-tracker-db
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: P@ssw0rd
+          volumeMounts:
+            - mountPath: /docker-entrypoint-initdb.d
+              name: postgres-init-vol
+      volumes:
+        - name: postgres-init-vol
+          persistentVolumeClaim:
+            claimName: postgres-init-pvc
+  replicas: 1
+  selector:
+    matchLabels:
+      name: job-apps-tracker-db-pod
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  labels:
+    app: job-apps-tracker
+spec:
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+  selector:
+    name: job-apps-tracker-db-pod
+    
+ 

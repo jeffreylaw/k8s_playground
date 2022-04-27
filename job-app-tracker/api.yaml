@@ -1,0 +1,47 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: job-apps-tracker-api-deployment
+  labels:
+    app: job-apps-tracker
+spec:
+  template:
+    metadata:
+      name: job-apps-tracker-api-pod
+      labels:
+        name: job-apps-tracker-api-pod
+        app: job-apps-tracker
+        tier: api
+    spec:
+      containers:
+        - name: job-apps-tracker-api
+          image: jlaw53/job-apps-tracker-api
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DEV_ENV
+              value: postgresql://postgres:P%40ssw0rd@db:5432/job-tracker-db
+            - name: SECRET
+              value: GREENBEAR
+  replicas: 1
+  selector:
+    matchLabels:
+      name: job-apps-tracker-api-pod
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+  labels:
+    app: job-apps-tracker
+spec:
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  selector:
+    name: job-apps-tracker-api-pod
+    tier: api
+

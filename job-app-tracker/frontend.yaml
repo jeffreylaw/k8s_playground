@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: job-apps-tracker-frontend-deployment
+  labels:
+    app: job-apps-tracker
+spec:
+  template:
+    metadata:
+      name: job-apps-tracker-frontend-pod
+      labels:
+        name: job-apps-tracker-frontend-pod
+        app: job-apps-tracker
+        tier: frontend
+    spec:
+      containers:
+        - name: job-apps-tracker-frontend
+          image: jlaw53/job-apps-tracker-frontend
+          ports:
+            - containerPort: 80
+  replicas: 2
+  selector:
+    matchLabels:
+      name: job-apps-tracker-frontend-pod
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: job-apps-tracker-frontend-service
+  labels:
+    app: job-apps-tracker
+spec:
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  selector:
+    name: job-apps-tracker-frontend-pod
+
+
