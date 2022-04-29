@@ -11,7 +11,7 @@ spec:
   accessModes:
     - ReadWriteMany
   hostPath:
-    path: "/tmp/scripts"
+    path: /data/pv0001
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
